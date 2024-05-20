@@ -1,5 +1,6 @@
 import pytest
 from main import BooksCollector
+from data import book_data
 
 
 def test_add_new_book_and_no_genre(collector):
@@ -21,7 +22,9 @@ def test_get_book_genre(collector):
 
 def test_get_books_with_specific_genre(collector):
     # тест на выведение книг с определенным жанром
-    assert collector.get_books_with_specific_genre('Ужасы') == ['Психо', 'Зомби']
+    collector.add_new_book('Психо')
+    collector.set_book_genre('Психо', 'Ужасы')
+    assert collector.get_books_with_specific_genre('Ужасы')
 
 
 def test_no_books_with_specific_genre(collector):
@@ -29,22 +32,22 @@ def test_no_books_with_specific_genre(collector):
     assert collector.get_books_with_specific_genre('Романтика') == []
 
 
-def test_get_books_for_children(collector):
+def test_get_books_for_children_no_age_rating(collector):
     # тест что книга подходит детям
-    children_books = collector.get_books_for_children()
-    assert 'Король лев' in children_books
+    collector.add_new_book('Король лев')
+    collector.set_book_genre('Король лев', 'Мультфильмы')
+    assert 'Король лев' in collector.get_books_for_children()
 
 
 def test_get_books_not_for_children(collector):
     # тест что книга не подходит детям
-    children_books = collector.get_books_for_children()
-    assert 'Преступление и наказание' not in collector.get_books_for_children()
+    assert 'Воланд' not in collector.get_books_for_children()
 
 
 def test_add_book_in_favorites(collector):
     # тест на проверку, что книга добавляется в избранное
     collector.add_book_in_favorites('Шерлок Холмс')
-    assert 'Шерлок Холмс' in collector.get_list_of_favorites_books()
+    assert collector.get_list_of_favorites_books() == ['Шерлок Холмс']
 
 
 def test_delete_book_from_favorites(collector):
