@@ -1,24 +1,66 @@
+import pytest
 from main import BooksCollector
+from data import book_data
 
-# класс TestBooksCollector объединяет набор тестов, которыми мы покрываем наше приложение BooksCollector
-# обязательно указывать префикс Test
-class TestBooksCollector:
 
-    # пример теста:
-    # обязательно указывать префикс test_
-    # дальше идет название метода, который тестируем add_new_book_
-    # затем, что тестируем add_two_books - добавление двух книг
-    def test_add_new_book_add_two_books(self):
-        # создаем экземпляр (объект) класса BooksCollector
-        collector = BooksCollector()
+def test_add_new_book_and_no_genre(collector):
+    # тест на проверку, что книга добавилась и не имеет жанра
+    collector.add_new_book('Незнайка на луне')
+    assert collector.books_genre['Незнайка на луне'] == ''
 
-        # добавляем две книги
-        collector.add_new_book('Гордость и предубеждение и зомби')
-        collector.add_new_book('Что делать, если ваш кот хочет вас убить')
 
-        # проверяем, что добавилось именно две
-        # словарь books_rating, который нам возвращает метод get_books_rating, имеет длину 2
-        assert len(collector.get_books_rating()) == 2
+def test_set_book_genre(collector):
+    # тест на добавление жанра к существующей книге
+    collector.set_book_genre('Преступление и наказание', 'Детективы')
+    assert collector.get_book_genre('Преступление и наказание') == 'Детективы'
 
-    # напиши свои тесты ниже
-    # чтобы тесты были независимыми в каждом из них создавай отдельный экземпляр класса BooksCollector()
+
+def test_get_book_genre(collector):
+    # тест на получение жанра конкретной книги
+    assert collector.get_book_genre('Мечтают ли электроовцы') == 'Фантастика'
+
+
+def test_get_books_with_specific_genre(collector):
+    # тест на выведение книг с определенным жанром
+    collector.add_new_book('Психо')
+    collector.set_book_genre('Психо', 'Ужасы')
+    assert collector.get_books_with_specific_genre('Ужасы')
+
+
+def test_no_books_with_specific_genre(collector):
+    # тест на случай, если нет книг определенного жанра
+    assert collector.get_books_with_specific_genre('Романтика') == []
+
+
+def test_get_books_for_children_no_age_rating(collector):
+    # тест что книга подходит детям
+    collector.add_new_book('Король лев')
+    collector.set_book_genre('Король лев', 'Мультфильмы')
+    assert 'Король лев' in collector.get_books_for_children()
+
+
+def test_get_books_not_for_children(collector):
+    # тест что книга не подходит детям
+    assert 'Воланд' not in collector.get_books_for_children()
+
+
+def test_add_book_in_favorites(collector):
+    # тест на проверку, что книга добавляется в избранное
+    collector.add_book_in_favorites('Шерлок Холмс')
+    assert collector.get_list_of_favorites_books() == ['Шерлок Холмс']
+
+
+def test_delete_book_from_favorites(collector):
+    # тест на проверку, что книга убирается из избранного
+    collector.add_book_in_favorites('Властелин колец')
+    collector.delete_book_from_favorites('Властелин колец')
+    assert 'Властелин колец' not in collector.get_list_of_favorites_books()
+
+
+def test_get_list_of_favorites_books(collector):
+    # тест на получение списка избранных книг
+    collector.add_book_in_favorites('Дживс и Вустер')
+    assert collector.get_list_of_favorites_books() == ['Дживс и Вустер']
+
+
+
